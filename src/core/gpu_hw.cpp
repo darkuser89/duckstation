@@ -37,6 +37,9 @@ static constexpr GPUTexture::Format VRAM_DS_FORMAT = GPUTexture::Format::D16;
 static u32 s_draw_number = 0;
 #endif
 
+// TODO
+bool USE_TEXTURE_CACHE = true;
+
 template<typename T>
 ALWAYS_INLINE static constexpr std::tuple<T, T> MinMax(T v1, T v2)
 {
@@ -1359,6 +1362,18 @@ void GPU_HW::DrawBatchVertices(BatchRenderMode render_mode, u32 num_vertices, u3
     m_batch_pipelines[depth_test][static_cast<u8>(render_mode)][static_cast<u8>(m_batch.texture_mode)][static_cast<u8>(
       m_batch.transparency_mode)][BoolToUInt8(m_batch.dithering)][BoolToUInt8(m_batch.interlacing)]
       .get());
+
+  // TOOD: Totally not optimized.
+  if ((m_batch.texture_mode & ~GPUTextureMode::RawTextureBit) == GPUTextureMode::Reserved_Direct16Bit)
+  {
+    DebugAssert(m_batch.tex_source);
+    g_gpu_device->SetTextureSampler(0, m_batch.tex_source->texture, g_gpu_device->GetNearestSampler());
+  }
+  else if (m_batch.texture_mode != GPUTextureMode::Disabled)
+  {
+    g_gpu_device->SetTextureSampler(0, m_vram_read_texture.get(), g_gpu_device->GetNearestSampler());
+  }
+
   g_gpu_device->Draw(num_vertices, base_vertex);
 }
 
@@ -1713,11 +1728,11 @@ void GPU_HW::LoadVertices()
         const u32 clip_bottom =
           static_cast<u32>(std::clamp<s32>(max_y, m_drawing_area.top, m_drawing_area.bottom)) + 1u;
 
-        m_vram_dirty_draw_rect.Include(clip_left, clip_right, clip_top, clip_bottom);
         AddDrawTriangleTicks(native_vertex_positions[0][0], native_vertex_positions[0][1],
                              native_vertex_positions[1][0], native_vertex_positions[1][1],
                              native_vertex_positions[2][0], native_vertex_positions[2][1], rc.shading_enable,
                              rc.texture_enable, rc.transparency_enable);
+        UpdateDrawnRectangle(clip_left, clip_top, clip_right, clip_bottom);
 
         std::memcpy(m_batch_current_vertex_ptr, vertices.data(), sizeof(BatchVertex) * 3);
         m_batch_current_vertex_ptr += 3;
@@ -1747,11 +1762,11 @@ void GPU_HW::LoadVertices()
           const u32 clip_bottom =
             static_cast<u32>(std::clamp<s32>(max_y_123, m_drawing_area.top, m_drawing_area.bottom)) + 1u;
 
-          m_vram_dirty_draw_rect.Include(clip_left, clip_right, clip_top, clip_bottom);
           AddDrawTriangleTicks(native_vertex_positions[2][0], native_vertex_positions[2][1],
                                native_vertex_positions[1][0], native_vertex_positions[1][1],
                                native_vertex_positions[3][0], native_vertex_positions[3][1], rc.shading_enable,
                                rc.texture_enable, rc.transparency_enable);
+          UpdateDrawnRectangle(clip_left, clip_top, clip_right, clip_bottom);
 
           AddVertex(vertices[2]);
           AddVertex(vertices[1]);
@@ -1869,8 +1884,8 @@ void GPU_HW::LoadVertices()
       const u32 clip_bottom =
         static_cast<u32>(std::clamp<s32>(pos_y + rectangle_height, m_drawing_area.top, m_drawing_area.bottom)) + 1u;
 
-      m_vram_dirty_draw_rect.Include(clip_left, clip_right, clip_top, clip_bottom);
       AddDrawRectangleTicks(clip_right - clip_left, clip_bottom - clip_top, rc.texture_enable, rc.transparency_enable);
+      m_vram_dirty_draw_rect.Include(clip_left, clip_top, clip_right, clip_bottom);
 
       if (m_sw_renderer)
       {
@@ -1932,8 +1947,8 @@ void GPU_HW::LoadVertices()
         const u32 clip_bottom =
           static_cast<u32>(std::clamp<s32>(max_y, m_drawing_area.top, m_drawing_area.bottom)) + 1u;
 
-        m_vram_dirty_draw_rect.Include(clip_left, clip_right, clip_top, clip_bottom);
         AddDrawLineTicks(clip_right - clip_left, clip_bottom - clip_top, rc.shading_enable);
+        UpdateDrawnRectangle(clip_left, clip_top, clip_right, clip_bottom);
 
         // TODO: Should we do a PGXP lookup here? Most lines are 2D.
         DrawLine(static_cast<float>(start_x), static_cast<float>(start_y), start_color, static_cast<float>(end_x),
@@ -1999,8 +2014,8 @@ void GPU_HW::LoadVertices()
             const u32 clip_bottom =
               static_cast<u32>(std::clamp<s32>(max_y, m_drawing_area.top, m_drawing_area.bottom)) + 1u;
 
-            m_vram_dirty_draw_rect.Include(clip_left, clip_right, clip_top, clip_bottom);
             AddDrawLineTicks(clip_right - clip_left, clip_bottom - clip_top, rc.shading_enable);
+            UpdateDrawnRectangle(clip_left, clip_top, clip_right, clip_bottom);
 
             // TODO: Should we do a PGXP lookup here? Most lines are 2D.
             DrawLine(static_cast<float>(start_x), static_cast<float>(start_y), start_color, static_cast<float>(end_x),
@@ -2074,6 +2089,19 @@ void GPU_HW::IncludeVRAMDirtyRectangle(Common::Rectangle<u32>& rect, const Commo
   {
     m_draw_mode.SetTexturePageChanged();
   }
+}
+
+void GPU_HW::UpdateDrawnRectangle(u32 left, u32 top, u32 right, u32 bottom)
+{
+  // TODO: Vector :(
+  if (left >= m_vram_dirty_draw_rect.left || top >= m_vram_dirty_draw_rect.top ||
+      right <= m_vram_dirty_draw_rect.right || bottom <= m_vram_dirty_draw_rect.bottom)
+  {
+    return;
+  }
+
+  m_vram_dirty_draw_rect.Include(left, right, top, bottom);
+  m_texture_cache.UpdateDrawnRect(m_vram_dirty_draw_rect);
 }
 
 ALWAYS_INLINE_RELEASE void GPU_HW::CheckForTexPageOverlap(u32 texpage, u32 min_u, u32 min_v, u32 max_u, u32 max_v)
@@ -2421,6 +2449,13 @@ void GPU_HW::UpdateVRAM(u32 x, u32 y, u32 width, u32 height, const void* data, b
   DebugAssert(bounds.right <= VRAM_WIDTH && bounds.bottom <= VRAM_HEIGHT);
   IncludeVRAMDirtyRectangle(m_vram_dirty_write_rect, bounds);
 
+  // TODO: Doesn't work with sw renderer above
+  if (USE_TEXTURE_CACHE)
+  {
+    GPU::UpdateVRAM(x, y, width, height, data, set_mask, check_mask);
+    m_texture_cache.InvalidateFromWrite(bounds);
+  }
+
   if (check_mask)
   {
     // set new vertex counter since we want this to take into consideration previous masked pixels
@@ -2522,6 +2557,8 @@ void GPU_HW::CopyVRAM(u32 src_x, u32 src_y, u32 dst_x, u32 dst_y, u32 width, u32
   const bool intersect_with_draw = m_vram_dirty_draw_rect.Intersects(src_bounds);
   const bool intersect_with_write = m_vram_dirty_write_rect.Intersects(src_bounds);
 
+  // TODO: Invalidate TC
+
   if (use_shader || IsUsingMultisampling())
   {
     if (intersect_with_draw || intersect_with_write)
@@ -2611,64 +2648,91 @@ void GPU_HW::DispatchRenderCommand()
   GPUTextureMode texture_mode;
   if (rc.IsTexturingEnabled())
   {
+    texture_mode = m_draw_mode.mode_reg.texture_mode;
+    texture_mode = (texture_mode == GPUTextureMode::Reserved_Direct16Bit) ? GPUTextureMode::Direct16Bit : texture_mode;
+
     // texture page changed - check that the new page doesn't intersect the drawing area
-    if (m_draw_mode.IsTexturePageChanged())
+    // TODO: Remove later part of condition, CPU heavy
+    // TODO: This all should be moved to flush if we can use TC...
+    if (m_draw_mode.IsTexturePageChanged() || !m_batch.tex_source)
     {
       m_draw_mode.ClearTexturePageChangedFlag();
 
-#if 0
-      if (m_vram_dirty_rect.Valid())
+      // TODO: don't need to flush if source page isn't dirty
+      // TODO: Don't null out tex_source
+      if (USE_TEXTURE_CACHE)
       {
-        GL_INS_FMT("VRAM DIRTY: {},{} => {},{}", m_vram_dirty_rect.left, m_vram_dirty_rect.top, m_vram_dirty_rect.right,
-                   m_vram_dirty_rect.bottom);
-
-        auto tpr = m_draw_mode.mode_reg.GetTexturePageRectangle();
-        GL_INS_FMT("PAGE RECT: {},{} => {},{}", tpr.left, tpr.top, tpr.right, tpr.bottom);
-        if (m_draw_mode.mode_reg.IsUsingPalette())
+        const GPUTextureCache::SourceKey key(m_draw_mode.mode_reg.texture_page, m_draw_mode.palette_reg, texture_mode);
+        if (!m_batch.tex_source || m_batch.tex_source->key != key)
         {
-          tpr = m_draw_mode.GetTexturePaletteRectangle();
-          GL_INS_FMT("PALETTE RECT: {},{} => {},{}", tpr.left, tpr.top, tpr.right, tpr.bottom);
-        }
-      }
-#endif
-
-      if (m_draw_mode.mode_reg.IsUsingPalette())
-      {
-        const Common::Rectangle<u32> palette_rect =
-          m_draw_mode.palette_reg.GetRectangle(m_draw_mode.mode_reg.texture_mode);
-        const bool update_drawn = palette_rect.Intersects(m_vram_dirty_draw_rect);
-        const bool update_written = palette_rect.Intersects(m_vram_dirty_write_rect);
-        if (update_drawn || update_written)
-        {
-          GL_INS("Palette in VRAM dirty area, flushing cache");
           if (!IsFlushed())
             FlushRender();
+        }
 
-          UpdateVRAMReadTexture(update_drawn, update_written);
+        m_batch.tex_source = m_texture_cache.LookupSource(key);
+        if (m_batch.tex_source)
+          texture_mode = GPUTextureMode::Reserved_Direct16Bit;
+      }
+
+      if (!USE_TEXTURE_CACHE || !m_batch.tex_source)
+      {
+#if 0
+        if (m_vram_dirty_rect.Valid())
+        {
+          GL_INS_FMT("VRAM DIRTY: {},{} => {},{}", m_vram_dirty_rect.left, m_vram_dirty_rect.top, m_vram_dirty_rect.right,
+            m_vram_dirty_rect.bottom);
+
+          auto tpr = m_draw_mode.mode_reg.GetTexturePageRectangle();
+          GL_INS_FMT("PAGE RECT: {},{} => {},{}", tpr.left, tpr.top, tpr.right, tpr.bottom);
+          if (m_draw_mode.mode_reg.IsUsingPalette())
+          {
+            tpr = m_draw_mode.GetTexturePaletteRectangle();
+            GL_INS_FMT("PALETTE RECT: {},{} => {},{}", tpr.left, tpr.top, tpr.right, tpr.bottom);
+          }
+        }
+#endif
+
+        if (m_draw_mode.mode_reg.IsUsingPalette())
+        {
+          const Common::Rectangle<u32> palette_rect =
+            m_draw_mode.palette_reg.GetRectangle(m_draw_mode.mode_reg.texture_mode);
+          const bool update_drawn = palette_rect.Intersects(m_vram_dirty_draw_rect);
+          const bool update_written = palette_rect.Intersects(m_vram_dirty_write_rect);
+          if (update_drawn || update_written)
+          {
+            GL_INS("Palette in VRAM dirty area, flushing cache");
+            if (!IsFlushed())
+              FlushRender();
+
+            UpdateVRAMReadTexture(update_drawn, update_written);
+          }
+        }
+
+        const Common::Rectangle<u32> page_rect = m_draw_mode.mode_reg.GetTexturePageRectangle();
+        u8 new_texpage_dirty = m_vram_dirty_draw_rect.Intersects(page_rect) ? TEXPAGE_DIRTY_DRAWN_RECT : 0;
+        new_texpage_dirty |= m_vram_dirty_write_rect.Intersects(page_rect) ? TEXPAGE_DIRTY_WRITTEN_RECT : 0;
+
+        if (new_texpage_dirty != 0)
+        {
+          GL_INS("Texpage is in dirty area, checking UV ranges");
+          m_texpage_dirty = new_texpage_dirty;
+          m_compute_uv_range = true;
+          m_current_uv_range.SetInvalid();
+        }
+        else
+        {
+          m_compute_uv_range = m_clamp_uvs;
+          if (m_texpage_dirty)
+            GL_INS("Texpage is no longer dirty");
+          m_texpage_dirty = 0;
         }
       }
-
-      const Common::Rectangle<u32> page_rect = m_draw_mode.mode_reg.GetTexturePageRectangle();
-      u8 new_texpage_dirty = m_vram_dirty_draw_rect.Intersects(page_rect) ? TEXPAGE_DIRTY_DRAWN_RECT : 0;
-      new_texpage_dirty |= m_vram_dirty_write_rect.Intersects(page_rect) ? TEXPAGE_DIRTY_WRITTEN_RECT : 0;
-
-      if (new_texpage_dirty != 0)
-      {
-        GL_INS("Texpage is in dirty area, checking UV ranges");
-        m_texpage_dirty = new_texpage_dirty;
-        m_compute_uv_range = true;
-        m_current_uv_range.SetInvalid();
-      }
-      else
-      {
-        m_compute_uv_range = m_clamp_uvs;
-        if (m_texpage_dirty)
-          GL_INS("Texpage is no longer dirty");
-        m_texpage_dirty = 0;
-      }
+    }
+    else if (m_batch.tex_source)
+    {
+      texture_mode = (texture_mode & GPUTextureMode::RawTextureBit) | GPUTextureMode::Reserved_Direct16Bit;
     }
 
-    texture_mode = m_draw_mode.mode_reg.texture_mode;
     if (rc.raw_texture_enable)
     {
       texture_mode =
@@ -2680,20 +2744,28 @@ void GPU_HW::DispatchRenderCommand()
     texture_mode = GPUTextureMode::Disabled;
   }
 
+  // TODO: REMOVE ME
+  const GPUTextureCache::Source* src = m_batch.tex_source;
+
   // has any state changed which requires a new batch?
   // Reverse blending breaks with mixed transparent and opaque pixels, so we have to do one draw per polygon.
   // If we have fbfetch, we don't need to draw it in two passes. Test case: Suikoden 2 shadows.
   const GPUTransparencyMode transparency_mode =
     rc.transparency_enable ? m_draw_mode.mode_reg.transparency_mode : GPUTransparencyMode::Disabled;
   const bool dithering_enable = (!m_true_color && rc.IsDitheringEnabled()) ? m_GPUSTAT.dither_enable : false;
-  if (texture_mode != m_batch.texture_mode || transparency_mode != m_batch.transparency_mode ||
+  if (!IsFlushed())
+  {
+    if (texture_mode != m_batch.texture_mode || transparency_mode != m_batch.transparency_mode ||
       (transparency_mode == GPUTransparencyMode::BackgroundMinusForeground && !m_supports_framebuffer_fetch) ||
       dithering_enable != m_batch.dithering)
-  {
-    FlushRender();
+    {
+      FlushRender();
+    }
   }
 
   EnsureVertexBufferSpaceForCurrentCommand();
+
+  m_batch.tex_source = src;
 
   if (GetBatchVertexCount() == 0)
   {
@@ -2807,6 +2879,9 @@ void GPU_HW::FlushRender()
     }
   }
 
+  m_batch.tex_source = nullptr;
+  m_batch.texture_mode = GPUTextureMode::Disabled;
+
   if (m_wireframe_mode != GPUWireframeMode::Disabled)
   {
     m_renderer_stats.num_batches++;
@@ -2818,6 +2893,9 @@ void GPU_HW::FlushRender()
 void GPU_HW::UpdateDisplay()
 {
   FlushRender();
+
+  if (USE_TEXTURE_CACHE)
+    m_texture_cache.AgeHashCache();
 
   if (g_settings.debugging.show_vram)
   {

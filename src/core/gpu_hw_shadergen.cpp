@@ -659,6 +659,7 @@ std::string GPU_HW_ShaderGen::GenerateBatchFragmentShader(GPU_HW::BatchRenderMod
               actual_texture_mode == GPUTextureMode::Palette4Bit || actual_texture_mode == GPUTextureMode::Palette8Bit);
   DefineMacro(ss, "PALETTE_4_BIT", actual_texture_mode == GPUTextureMode::Palette4Bit);
   DefineMacro(ss, "PALETTE_8_BIT", actual_texture_mode == GPUTextureMode::Palette8Bit);
+  DefineMacro(ss, "PAGE_TEXTURE", actual_texture_mode == GPUTextureMode::Reserved_Direct16Bit);
   DefineMacro(ss, "RAW_TEXTURE", raw_texture);
   DefineMacro(ss, "DITHERING", dithering);
   DefineMacro(ss, "DITHERING_SCALED", m_scaled_dithering);
@@ -759,11 +760,15 @@ float4 SampleFromVRAM(uint4 texpage, float2 coords)
     // sample palette. can wrap in X direction
     uint2 palette_icoord = uint2(((texpage.z + palette_index) & 0x3FFu) * RESOLUTION_SCALE, texpage.w);
     return SAMPLE_TEXTURE(samp0, float2(palette_icoord) * RCP_VRAM_SIZE);
-  #else
+  #elif !PAGE_TEXTURE
     // Direct texturing. Render-to-texture effects. Use upscaled coordinates.
-    uint2 icoord = ApplyUpscaledTextureWindow(FloatToIntegerCoords(coords));    
+    uint2 icoord = ApplyUpscaledTextureWindow(FloatToIntegerCoords(coords));
     uint2 direct_icoord = texpage.xy + icoord;
     return SAMPLE_TEXTURE(samp0, float2(direct_icoord) * RCP_VRAM_SIZE);
+  #else
+    // Cached textures.
+    uint2 icoord = ApplyTextureWindow(FloatToIntegerCoords(coords));
+    return SAMPLE_TEXTURE(samp0, float2(icoord) * float2(1.0f / 255.0f, 1.0f / 255.0f));
   #endif
 }
 
@@ -814,13 +819,13 @@ float4 SampleFromVRAM(uint4 texpage, float2 coords)
     // We can't currently use upscaled coordinate for palettes because of how they're packed.
     // Not that it would be any benefit anyway, render-to-texture effects don't use palettes.
     float2 coords = v_tex0;
-    #if PALETTE
+    #if PALETTE || PAGE_TEXTURE
       coords /= float2(RESOLUTION_SCALE, RESOLUTION_SCALE);
     #endif
 
     #if UV_LIMITS
       float4 uv_limits = v_uv_limits;
-      #if !PALETTE
+      #if !PALETTE && !PAGE_TEXTURE
         // Extend the UV range to all "upscaled" pixels. This means 1-pixel-high polygon-based 
         // framebuffer effects won't be downsampled. (e.g. Mega Man Legends 2 haze effect)
         uv_limits *= float(RESOLUTION_SCALE);
