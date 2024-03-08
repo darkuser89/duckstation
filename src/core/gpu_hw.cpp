@@ -828,6 +828,8 @@ bool GPU_HW::CompilePipelines()
   plconfig.SetTargetFormats(VRAM_RT_FORMAT, VRAM_DS_FORMAT);
   plconfig.samples = m_multisamples;
   plconfig.per_sample_shading = m_per_sample_shading;
+  plconfig.color_feedback_loop = false;
+  plconfig.depth_sampling = false;
   plconfig.geometry_shader = nullptr;
 
   // [depth_test][render_mode][texture_mode][transparency_mode][dithering][interlacing]

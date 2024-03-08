@@ -72,8 +72,10 @@ std::unique_ptr<GPUShader> VulkanDevice::CreateShaderFromSource(GPUShaderStage s
 
 //////////////////////////////////////////////////////////////////////////
 
-VulkanPipeline::VulkanPipeline(VkPipeline pipeline, Layout layout)
-  : GPUPipeline(), m_pipeline(pipeline), m_layout(layout)
+VulkanPipeline::VulkanPipeline(VkPipeline pipeline, Layout layout, u8 vertices_per_primitive,
+                               RenderPassFlag render_pass_flags)
+  : GPUPipeline(), m_pipeline(pipeline), m_layout(layout), m_vertices_per_primitive(vertices_per_primitive),
+    m_render_pass_flags(render_pass_flags)
 {
 }
 
@@ -89,12 +91,13 @@ void VulkanPipeline::SetDebugName(const std::string_view& name)
 
 std::unique_ptr<GPUPipeline> VulkanDevice::CreatePipeline(const GPUPipeline::GraphicsConfig& config)
 {
-  static constexpr std::array<VkPrimitiveTopology, static_cast<u32>(GPUPipeline::Primitive::MaxCount)> primitives = {{
-    VK_PRIMITIVE_TOPOLOGY_POINT_LIST,     // Points
-    VK_PRIMITIVE_TOPOLOGY_LINE_LIST,      // Lines
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,  // Triangles
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, // TriangleStrips
-  }};
+  static constexpr std::array<std::pair<VkPrimitiveTopology, u32>, static_cast<u32>(GPUPipeline::Primitive::MaxCount)>
+    primitives = {{
+      {VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 1},     // Points
+      {VK_PRIMITIVE_TOPOLOGY_LINE_LIST, 2},      // Lines
+      {VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 3},  // Triangles
+      {VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, 3}, // TriangleStrips
+    }};
 
   static constexpr u32 MAX_COMPONENTS = 4;
   static constexpr const VkFormat format_mapping[static_cast<u8>(
@@ -171,7 +174,8 @@ std::unique_ptr<GPUPipeline> VulkanDevice::CreatePipeline(const GPUPipeline::Gra
     }
   }
 
-  gpb.SetPrimitiveTopology(primitives[static_cast<u8>(config.primitive)]);
+  const auto [vk_topology, vertices_per_primitive] = primitives[static_cast<u8>(config.primitive)];
+  gpb.SetPrimitiveTopology(vk_topology);
 
   // Line width?
 
@@ -229,5 +233,6 @@ std::unique_ptr<GPUPipeline> VulkanDevice::CreatePipeline(const GPUPipeline::Gra
   if (!pipeline)
     return {};
 
-  return std::unique_ptr<GPUPipeline>(new VulkanPipeline(pipeline, config.layout));
+  return std::unique_ptr<GPUPipeline>(
+    new VulkanPipeline(pipeline, config.layout, static_cast<u8>(vertices_per_primitive), config.render_pass_flags));
 }

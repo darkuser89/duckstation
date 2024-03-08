@@ -1588,6 +1588,7 @@ bool GPU::CompileDisplayPipeline()
   plconfig.depth_format = GPUTexture::Format::Unknown;
   plconfig.samples = 1;
   plconfig.per_sample_shading = false;
+  plconfig.render_pass_flags = GPUPipeline::NoRenderPassFlags;
 
   std::string vs = shadergen.GenerateDisplayVertexShader();
   std::string fs;
