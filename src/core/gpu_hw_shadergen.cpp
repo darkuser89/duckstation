@@ -633,19 +633,20 @@ void FilteredSampleFromVRAM(uint4 texpage, float2 coords, float4 uv_limits,
 
 std::string GPU_HW_ShaderGen::GenerateBatchFragmentShader(GPU_HW::BatchRenderMode render_mode,
                                                           GPUTransparencyMode transparency, GPUTextureMode texture_mode,
-                                                          bool dithering, bool interlacing)
+                                                          bool dithering, bool interlacing, bool check_mask)
 {
-  // Shouldn't be using shader blending without fbfetch.
-  DebugAssert(m_supports_framebuffer_fetch || transparency == GPUTransparencyMode::Disabled);
+  // TODO: don't write depth for shader blend
+  DebugAssert(transparency == GPUTransparencyMode::Disabled || render_mode == GPU_HW::BatchRenderMode::ShaderBlend);
 
   const GPUTextureMode actual_texture_mode = texture_mode & ~GPUTextureMode::RawTextureBit;
   const bool raw_texture = (texture_mode & GPUTextureMode::RawTextureBit) == GPUTextureMode::RawTextureBit;
   const bool textured = (texture_mode != GPUTextureMode::Disabled);
-  const bool use_framebuffer_fetch = (m_supports_framebuffer_fetch && transparency != GPUTransparencyMode::Disabled);
-  const bool use_dual_source = !use_framebuffer_fetch && m_supports_dual_source_blend &&
-                               ((render_mode != GPU_HW::BatchRenderMode::TransparencyDisabled &&
-                                 render_mode != GPU_HW::BatchRenderMode::OnlyOpaque) ||
-                                m_texture_filter != GPUTextureFilter::Nearest);
+  const bool shader_blending = (render_mode == GPU_HW::BatchRenderMode::ShaderBlend &&
+                                (transparency != GPUTransparencyMode::Disabled || check_mask));
+  const bool use_dual_source = (!shader_blending && m_supports_dual_source_blend &&
+                                ((render_mode != GPU_HW::BatchRenderMode::TransparencyDisabled &&
+                                  render_mode != GPU_HW::BatchRenderMode::OnlyOpaque) ||
+                                 m_texture_filter != GPUTextureFilter::Nearest));
 
   std::stringstream ss;
   WriteHeader(ss);
@@ -653,7 +654,8 @@ std::string GPU_HW_ShaderGen::GenerateBatchFragmentShader(GPU_HW::BatchRenderMod
   DefineMacro(ss, "TRANSPARENCY_ONLY_OPAQUE", render_mode == GPU_HW::BatchRenderMode::OnlyOpaque);
   DefineMacro(ss, "TRANSPARENCY_ONLY_TRANSPARENT", render_mode == GPU_HW::BatchRenderMode::OnlyTransparent);
   DefineMacro(ss, "TRANSPARENCY_MODE", static_cast<s32>(transparency));
-  DefineMacro(ss, "SHADER_BLENDING", use_framebuffer_fetch);
+  DefineMacro(ss, "SHADER_BLENDING", shader_blending);
+  DefineMacro(ss, "CHECK_MASK_BIT", check_mask);
   DefineMacro(ss, "TEXTURED", textured);
   DefineMacro(ss, "PALETTE",
               actual_texture_mode == GPUTextureMode::Palette4Bit || actual_texture_mode == GPUTextureMode::Palette8Bit);
@@ -800,19 +802,19 @@ float3 ApplyDebanding(float2 frag_coord)
       DeclareFragmentEntryPoint(ss, 1, 1,
                                 {{"nointerpolation", "uint4 v_texpage"}, {"nointerpolation", "float4 v_uv_limits"}},
                                 true, use_dual_source ? 2 : 1, !m_pgxp_depth, UsingMSAA(), UsingPerSampleShading(),
-                                false, m_disable_color_perspective, use_framebuffer_fetch);
+                                false, m_disable_color_perspective, shader_blending);
     }
     else
     {
       DeclareFragmentEntryPoint(ss, 1, 1, {{"nointerpolation", "uint4 v_texpage"}}, true, use_dual_source ? 2 : 1,
                                 !m_pgxp_depth, UsingMSAA(), UsingPerSampleShading(), false, m_disable_color_perspective,
-                                use_framebuffer_fetch);
+                                shader_blending);
     }
   }
   else
   {
     DeclareFragmentEntryPoint(ss, 1, 0, {}, true, use_dual_source ? 2 : 1, !m_pgxp_depth, UsingMSAA(),
-                              UsingPerSampleShading(), false, m_disable_color_perspective, use_framebuffer_fetch);
+                              UsingPerSampleShading(), false, m_disable_color_perspective, shader_blending);
   }
 
   ss << R"(
@@ -929,6 +931,11 @@ float3 ApplyDebanding(float2 frag_coord)
   #if SHADER_BLENDING
     float4 bg_col = LAST_FRAG_COLOR;
     float4 fg_col = float4(color, oalpha);
+
+    #if CHECK_MASK_BIT
+      if (bg_col.a != 0.0)
+        discard;
+    #endif
 
     #if TEXTURE_FILTERING
       #if TRANSPARENCY_MODE == 0 || TRANSPARENCY_MODE == 3
