@@ -1068,32 +1068,32 @@ Ungelesene Nachrichten: {}</translation>
     <message>
         <location filename="../../core/analog_controller.cpp" line="815"/>
         <source>L1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../core/analog_controller.cpp" line="816"/>
         <source>R1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../core/analog_controller.cpp" line="817"/>
         <source>L2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../core/analog_controller.cpp" line="818"/>
         <source>R2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../core/analog_controller.cpp" line="819"/>
         <source>L3</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../core/analog_controller.cpp" line="820"/>
         <source>R3</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../core/analog_controller.cpp" line="822"/>
@@ -1490,7 +1490,7 @@ Ungelesene Nachrichten: {}</translation>
     <message>
         <location filename="../audiosettingswidget.ui" line="81"/>
         <source>Off (Noisy)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aus (Laut)</translation>
     </message>
     <message>
         <location filename="../audiosettingswidget.ui" line="86"/>
@@ -1510,7 +1510,7 @@ Ungelesene Nachrichten: {}</translation>
     <message>
         <location filename="../audiosettingswidget.ui" line="126"/>
         <source>Driver:</source>
-        <translation type="unfinished"></translation>
+        <translation>Treiber:</translation>
     </message>
     <message>
         <location filename="../audiosettingswidget.ui" line="66"/>
@@ -1520,7 +1520,7 @@ Ungelesene Nachrichten: {}</translation>
     <message>
         <location filename="../audiosettingswidget.ui" line="167"/>
         <source>Output Device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgabe Gerät:</translation>
     </message>
     <message>
         <location filename="../audiosettingswidget.ui" line="180"/>
@@ -1588,7 +1588,7 @@ Ungelesene Nachrichten: {}</translation>
     <message>
         <location filename="../audiosettingswidget.cpp" line="69"/>
         <source>Output Latency</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgabelatenz</translation>
     </message>
     <message>
         <location filename="../audiosettingswidget.cpp" line="69"/>
@@ -2249,22 +2249,22 @@ Ungelesene Nachrichten: {}</translation>
     <message>
         <location filename="../cheatmanagerdialog.ui" line="462"/>
         <source>Add Selected Results To Watch List</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgewählte Ergebnisse zur Beobachtungsliste hinzufügen</translation>
     </message>
     <message>
         <location filename="../cheatmanagerdialog.ui" line="498"/>
         <source>Number of Results (Display limited to first 5000) : </source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl der Ergebnisse (Anzeige auf die ersten 5000 beschränkt) : </translation>
     </message>
     <message>
         <location filename="../cheatmanagerdialog.ui" line="538"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../cheatmanagerdialog.ui" line="588"/>
         <source>Simple Cheat Code or Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Einfacher Cheat-Code oder Beschreibung</translation>
     </message>
     <message>
         <location filename="../cheatmanagerdialog.ui" line="608"/>
@@ -2274,7 +2274,7 @@ Ungelesene Nachrichten: {}</translation>
     <message>
         <location filename="../cheatmanagerdialog.ui" line="628"/>
         <source>Remove Selected Entries from Watch List</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgewählte Einträge aus der Beobachtungsliste entfernen</translation>
     </message>
     <message>
         <location filename="../cheatmanagerdialog.ui" line="618"/>
@@ -6100,7 +6100,7 @@ Do you want to load this save and continue?</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6600"/>
         <source>CPU Mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPU Modus</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6601"/>
@@ -6510,7 +6510,7 @@ Do you want to load this save and continue?</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6684"/>
         <source>Displays popup messages when starting, submitting, or failing a leaderboard challenge.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeigt eine Popup Benachrichtigung beim Starten, Senden oder Scheitern einer Ranglisten-Herausforderung an.</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6685"/>
@@ -7220,7 +7220,7 @@ Error was:</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6822"/>
         <source>Logs BIOS calls to printf(). Not all games contain debugging messages.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Protokolliert BIOS-Aufrufe von printf(). Nicht alle Spiele enthalten Debugmeldungen.</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6823"/>
@@ -7535,7 +7535,7 @@ Error was:</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6885"/>
         <source>Plays sound effects for events such as achievement unlocks and leaderboard submissions.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Spielt Soundeffekte für Ereignisse wie das Freischalten von Errungenschaften und die Teilnahme an der Rangliste ab.</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6886"/>
@@ -7890,7 +7890,7 @@ Error was:</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6956"/>
         <source>Screenshot Size</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Screenshot Größe</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6957"/>
@@ -8095,7 +8095,7 @@ Error was:</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6997"/>
         <source>Shows icons in the lower-right corner of the screen when a challenge/primed achievement is active.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeigt Symbole in der unteren rechten Ecke des Bildschirms an, wenn eine Herausforderung/eine Errungenschaft aktiv ist.</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="6998"/>
@@ -8310,7 +8310,7 @@ Error was:</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="7040"/>
         <source>Texture Replacements</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Texturersatz</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="7041"/>
@@ -8545,7 +8545,7 @@ Error was:</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="7087"/>
         <source>When enabled, each session will behave as if no achievements have been unlocked.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn diese Option aktiviert ist, verhält sich jede Sitzung so, als ob keine Erfolge freigeschaltet worden wären.</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="7088"/>
@@ -8590,7 +8590,7 @@ Error was:</source>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="7096"/>
         <source>&quot;Challenge&quot; mode for achievements, including leaderboard tracking. Disables save state, cheats, and slowdown functions.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&quot;Challenge&quot; Modus für Errungenschaften, einschließlich Leaderboard-Verfolgung. Deaktiviert das Speichern des aktuellen Zustands, Cheats und die Slowdown-Funktion.</translation>
     </message>
     <message>
         <location filename="../../core/fullscreen_ui.cpp" line="7097"/>
@@ -14264,7 +14264,7 @@ Do you want to create this directory?</source>
     <message>
         <location filename="../settingwidgetbinder.h" line="1113"/>
         <source>Select folder for %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ordner für %1 auswählen</translation>
     </message>
 </context>
 <context>
@@ -14541,7 +14541,7 @@ Do you want to create this directory?</source>
     <message>
         <location filename="../setupwizarddialog.ui" line="50"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:700;&quot;&gt;Welcome to DuckStation!&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;This wizard will help guide you through the configuration steps required to use the application. It is recommended if this is your first time installing DuckStation that you view the setup guide at &lt;a href=&quot;https://github.com/stenzek/duckstation#downloading-and-running&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/stenzek/duckstation#downloading-and-running&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;By default, DuckStation will connect to the server at &lt;a href=&quot;https://github.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;github.com&lt;/span&gt;&lt;/a&gt; to check for updates, and if available and confirmed, download update packages from &lt;a href=&quot;https://github.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;github.com&lt;/span&gt;&lt;/a&gt;. If you do not wish for DuckStation to make any network connections on startup, you should uncheck the Automatic Updates option now. The Automatic Update setting can be changed later at any time in Interface Settings.&lt;/p&gt;&lt;p&gt;Please choose a language and theme to begin.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:700;&quot;&gt;Willkommen bei DuckStation!&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;Dieser Assistent wird Sie durch die Konfigurationsschritte führen, die erforderlich sind, um die Anwendung zu nutzen. Es wird empfohlen, wenn Sie DuckStation zum ersten Mal installieren, dass Sie das Setup-Handbuch unter &lt;a href=&quot;https://github.com/stenzek/duckstation#downloading-and-running&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/stenzek/duckstation#downloading-and-running&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Standardmäßig verbindet sich DuckStation mit dem Server unter &lt;a href=&quot;https://github.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;github.com&lt;/span&gt;&lt;/a&gt; um nach Updates zu suchen und falls verfügbar und bestätigt zu werden, laden Sie Update-Pakete von &lt;a href=&quot;https://github.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;github.com&lt;/span&gt;&lt;/a&gt;.herunter. Wenn Sie keine Netzwerkverbindungen beim Start von DuckStation herstellen möchten, deaktivieren Sie bitte die Option Automatische Updates. Die automatische Update-Einstellung kann später jederzeit in den Benutzeroberflächeneinstellungen geändert werden.&lt;/p&gt;&lt;p&gt;Bitte wählen Sie eine Sprache und ein Erscheinungsbild aus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../setupwizarddialog.ui" line="71"/>
@@ -14561,7 +14561,7 @@ Do you want to create this directory?</source>
     <message>
         <location filename="../setupwizarddialog.ui" line="136"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DuckStation requires a PS1 BIOS in order to run.&lt;/p&gt;&lt;p&gt;For legal reasons, you must obtain a BIOS &lt;span style=&quot; font-weight:700;&quot;&gt;from an actual PS1 unit that you own&lt;/span&gt; (borrowing doesn&apos;t count). You should use Caetla or another utility to create an image from your console&apos;s BIOS ROM on your PC.&lt;/p&gt;&lt;p&gt;Once dumped, this BIOS image should be placed in the bios folder within the data directory shown below, or you can instruct DuckStation to scan an alternative directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DuckStation benötigt ein PS1 BIOS zum Ausführen.&lt;/p&gt;&lt;p&gt;Aus rechtlichen Gründen müssen Sie ein BIOS &lt;span style=&quot; font-weight:700;&quot;&gt;von einem echten PS1 erhalten, das Sie selbst besitzen&lt;/span&gt; (Ausleihen gilt nicht). Sie sollten Caetla oder ein anderes Dienstprogramm verwenden, um ein Image vom BIOS-ROM Ihrer Konsole auf Ihrem PC zu erstellen.&lt;/p&gt;&lt;p&gt;Dieses BIOS sollte in das BIOS-Verzeichnis des unten angezeigten Verzeichnisses gelegt werden oder Sie können DuckStation anweisen, ein alternatives Verzeichnis zu durchsuchen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../setupwizarddialog.ui" line="151"/>
@@ -14606,7 +14606,7 @@ Do you want to create this directory?</source>
     <message>
         <location filename="../setupwizarddialog.ui" line="292"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DuckStation will automatically scan and identify games from the selected directories below, and populate the game list. These games should be dumped from discs you own. Utilities such as ImgBurn can be used to create images of game discs in .bin/.cue format.&lt;/p&gt;&lt;p&gt;Supported formats for dumps include: &lt;span style=&quot; font-weight:700;&quot;&gt;.cue&lt;/span&gt; (Cue Sheets), &lt;span style=&quot; font-weight:700;&quot;&gt;.iso/.img&lt;/span&gt; (Single Track Image), &lt;span style=&quot; font-weight:700;&quot;&gt;.ecm&lt;/span&gt; (Error Code Modeling Image), &lt;span style=&quot; font-weight:700;&quot;&gt;.mds&lt;/span&gt; (Media Descriptor Sidecar), &lt;span style=&quot; font-weight:700;&quot;&gt;.chd&lt;/span&gt; (Compressed Hunks of Data), &lt;span style=&quot; font-weight:700;&quot;&gt;.pbp&lt;/span&gt; (PlayStation Portable, Only Decrypted).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DuckStation scannt und identifiziert automatisch Spiele aus den unten ausgewählten Verzeichnissen und füllt die Spielliste damit. Diese Spiele sollten von Ihren eigenen Discs kopiert werden. Dienstprogramme wie ImgBurn können verwendet werden, um Dumps von Spiele-Discs im .bin/.cue-Format zu erstellen.&lt;/p&gt;&lt;p&gt;Unterstützte Formate für Datenträgerabbilder sind: &lt;span style=&quot; font-weight:700;&quot;&gt;.cue&lt;/span&gt; (Cue Sheets), &lt;span style=&quot; font-weight:700;&quot;&gt;.iso/.img&lt;/span&gt; (Single Track Image), &lt;span style=&quot; font-weight:700;&quot;&gt;.ecm&lt;/span&gt; (Error Code Modeling Image), &lt;span style=&quot; font-weight:700;&quot;&gt;.mds&lt;/span&gt; (Media Descriptor Sidecar), &lt;span style=&quot; font-weight:700;&quot;&gt;.chd&lt;/span&gt; (Compressed Hunks of Data), &lt;span style=&quot; font-weight:700;&quot;&gt;.pbp&lt;/span&gt; (PlayStation Portable, Only Decrypted).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../setupwizarddialog.ui" line="307"/>
@@ -14637,7 +14637,7 @@ Do you want to create this directory?</source>
     <message>
         <location filename="../setupwizarddialog.ui" line="402"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;By default, DuckStation will map your keyboard to the virtual controller.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;To use an external controller, you must map it first. &lt;/span&gt;On this screen, you can automatically map any controller which is currently connected. If your controller is not currently connected, you can plug it in now.&lt;/p&gt;&lt;p&gt;To change controller bindings in more detail, or use multi-tap, open the Settings menu and choose Controllers once you have completed the Setup Wizard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Standardmäßig wird DuckStation Ihre Tastatur dem virtuellen PS1-Controller zuordnen.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Um einen externen Controller verwenden zu können, müssen Sie ihn zuerst zuordnen. &lt;/span&gt;Auf diesem Bildschirm können Sie automatisch jedem aktuell verbundenen Controller zuordnen. Wenn Ihr Controller derzeit nicht verbunden ist, können Sie ihn jetzt einstecken.&lt;/p&gt;&lt;p&gt;Um Controller-Bindungen detaillierter zu ändern, oder verwenden eines MultiTap, Öffnen Sie das Menü Einstellungen und wählen Sie Controller, sobald Sie den Setup-Assistenten abgeschlossen haben.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../setupwizarddialog.ui" line="412"/>
